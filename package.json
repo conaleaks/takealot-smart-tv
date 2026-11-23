@@ -1,0 +1,13 @@
+{
+  "name": "takealot-smart-tv",
+  "version": "1.0.0",
+  "description": "Takealot Store - Hisense 65\" E7Q 4K QLED Smart TV with Ghost Pay Integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["takealot", "ghopay"],
+  "author": "",
+  "license": "ISC"
+}

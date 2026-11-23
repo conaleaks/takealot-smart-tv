@@ -1,0 +1,3138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+
+<!-- UTM & Tracking Preservation System -->
+<script>
+(function() {
+  var TRACKING_KEYS = [
+    'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+    'utm_id', 'src', 'sck', 'fbclid', 'gclid', 'ttclid'
+  ];
+
+  function getParamsFromUrl() {
+    var params = {};
+    try {
+      var search = window.location.search;
+      if (!search) return params;
+      var q = new URLSearchParams(search);
+      TRACKING_KEYS.forEach(function(k) {
+        var val = q.get(k);
+        if (val) params[k] = val;
+      });
+      q.forEach(function(val, key) {
+        if (key.indexOf('utm_') === 0 && !params[key]) {
+          params[key] = val;
+        }
+      });
+    } catch(e) {}
+    return params;
+  }
+
+  function saveParams(params) {
+    if (!params || Object.keys(params).length === 0) return;
+    try {
+      var stored = getStoredParams();
+      var merged = Object.assign({}, stored, params);
+      localStorage.setItem('takealot_utm_params', JSON.stringify(merged));
+      sessionStorage.setItem('takealot_utm_params', JSON.stringify(merged));
+      Object.keys(merged).forEach(function(k) {
+        localStorage.setItem(k, merged[k]);
+      });
+    } catch(e) {}
+  }
+
+  function getStoredParams() {
+    try {
+      var s = sessionStorage.getItem('takealot_utm_params') || localStorage.getItem('takealot_utm_params');
+      if (s) return JSON.parse(s);
+    } catch(e) {}
+    var fallback = {};
+    TRACKING_KEYS.forEach(function(k) {
+      try {
+        var v = localStorage.getItem(k);
+        if (v) fallback[k] = v;
+      } catch(e) {}
+    });
+    return fallback;
+  }
+
+  // Captura e persiste na inicialização imediata
+  var currentUrlParams = getParamsFromUrl();
+  if (Object.keys(currentUrlParams).length > 0) {
+    saveParams(currentUrlParams);
+  }
+
+  window.getPreservedUtms = function() {
+    return Object.assign({}, getStoredParams(), getParamsFromUrl());
+  };
+
+  window.getPreservedUtmQuery = function(includeLeadingAmp) {
+    var utms = window.getPreservedUtms();
+    var parts = [];
+    Object.keys(utms).forEach(function(k) {
+      parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(utms[k]));
+    });
+    if (parts.length === 0) return '';
+    var str = parts.join('&');
+    return includeLeadingAmp !== false ? ('&' + str) : str;
+  };
+
+  window.appendUtms = function(url) {
+    if (!url || typeof url !== 'string') return url;
+    if (url.indexOf('javascript:') === 0 || url.indexOf('#') === 0 || url.indexOf('mailto:') === 0 || url.indexOf('tel:') === 0) {
+      return url;
+    }
+    var utms = window.getPreservedUtms();
+    if (Object.keys(utms).length === 0) return url;
+
+    try {
+      var hasProtocol = url.indexOf('http://') === 0 || url.indexOf('https://') === 0;
+      var base = hasProtocol ? url : 'http://local.fake/' + url.replace(/^\//, '');
+      var parsed = new URL(base);
+
+      Object.keys(utms).forEach(function(k) {
+        if (!parsed.searchParams.has(k)) {
+          parsed.searchParams.set(k, utms[k]);
+        }
+      });
+
+      if (hasProtocol) {
+        return parsed.toString();
+      } else {
+        var cleanPath = parsed.pathname.replace(/^\/local\.fake\/?/, '').replace(/^\//, '');
+        var prefix = (url.indexOf('/') === 0) ? '/' : '';
+        return prefix + cleanPath + parsed.search + parsed.hash;
+      }
+    } catch(e) {
+      var sep = url.indexOf('?') === -1 ? '?' : '&';
+      var q = window.getPreservedUtmQuery(false);
+      return q ? (url + sep + q) : url;
+    }
+  };
+
+  function decorateLinks() {
+    try {
+      var links = document.querySelectorAll('a[href]');
+      for (var i = 0; i < links.length; i++) {
+        var a = links[i];
+        var href = a.getAttribute('href');
+        if (href && (href.indexOf('.html') !== -1 || href === '/' || href.indexOf('?') !== -1)) {
+          if (href.indexOf('http') === -1 || href.indexOf(window.location.host) !== -1) {
+            a.setAttribute('href', window.appendUtms(href));
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', decorateLinks);
+  } else {
+    decorateLinks();
+  }
+  if (window.MutationObserver) {
+    document.addEventListener('DOMContentLoaded', function() {
+      new MutationObserver(decorateLinks).observe(document.body, { childList: true, subtree: true });
+    });
+  }
+})();
+</script>
+<!-- End UTM & Tracking Preservation System -->
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '3040652709472060');
+fbq('init', '1671642977776583');
+fbq('init', '1148570223701664');
+fbq('track', 'PageView');
+
+</script>
+<noscript>
+<img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=3040652709472060&ev=PageView&noscript=1" />
+<img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1671642977776583&ev=PageView&noscript=1" />
+<img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1148570223701664&ev=PageView&noscript=1" />
+</noscript>
+<!-- End Meta Pixel Code -->
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hisense 65" E7Q 4K QLED Smart TV | Takealot</title>
+    <link rel="icon" type="image/svg+xml" href="imagens/takealot-logo.svg" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    
+
+    <style>
+        :root {
+            --takealot-blue: #0b79bf;
+            --takealot-green: #168744;
+            --takealot-green-dark: #126e37;
+            --takealot-green-light: #eaf6ed;
+            --takealot-text: #222222;
+            --takealot-muted: #777777;
+            --takealot-border: #e8e8e8;
+            --takealot-bg: #ffffff;
+            --takealot-page-bg: #f4f4f4;
+            --pink-accent: #e91e63;
+            --pink-border: #f8bbd0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            background: var(--takealot-page-bg);
+            color: var(--takealot-text);
+            padding-bottom: 95px;
+        }
+
+        .main-wrapper {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 1. Header (Matching Screenshot Image 4) */
+        header {
+            background: #fff;
+            height: 52px;
+            padding: 0 16px;
+            border-bottom: 1px solid #ebebeb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-btn {
+            background: none;
+            border: none;
+            font-size: 19px;
+            color: #222;
+            cursor: pointer;
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-wrap {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-wrap img {
+            height: 26px;
+            width: auto;
+            display: block;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 18px;
+        }
+        .header-actions a {
+            color: #444;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: color 0.15s;
+        }
+        .header-actions a:hover {
+            color: #0b79bf;
+        }
+        .header-actions a.cart-icon-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px 2px;
+        }
+        .header-actions .cart-badge-dot {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background-color: #0074d9;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            width: 17px;
+            height: 17px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            pointer-events: none;
+        }
+
+        /* 2. Top Location Bar */
+        .location-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 16px;
+            border-bottom: 1px solid #ebebeb;
+            font-size: 13px;
+            color: #444;
+            background: #fff;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .location-bar:active {
+            background: #f8f8f8;
+        }
+        .location-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #444;
+        }
+        .location-bar-left i {
+            color: #555;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .location-bar-add {
+            color: var(--takealot-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* 3. Product Gallery Box (Matching Screenshot Image 4) */
+        .gallery-box {
+            position: relative;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            margin: 12px 16px 0;
+            padding: 12px 0 16px;
+            overflow: hidden;
+        }
+        
+        .badge-col {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 5;
+        }
+        .badge-black {
+            background: #000;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 3px;
+            line-height: 1.15;
+        }
+        .badge-blue {
+            background: #0076ff;
+            color: #fff;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 3px;
+            line-height: 1.15;
+            text-align: center;
+        }
+
+        .expand-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+            z-index: 5;
+            cursor: pointer;
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+        }
+        .carousel::-webkit-scrollbar {
+            display: none;
+        }
+        .carousel-slide {
+            width: 100%;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            height: 270px;
+        }
+        .carousel-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .dots-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #d4d4d4;
+            transition: all 0.2s;
+        }
+        .dot.active {
+            background: #0076ff;
+            width: 8px;
+            height: 8px;
+        }
+
+        /* 4. Product Heading & Rating (Image 4) */
+        .product-meta {
+            padding: 16px 16px 0;
+            background: #fff;
+        }
+        .title-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .product-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+            line-height: 1.35;
+            flex: 1;
+        }
+        .share-circle-btn {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .brand-link {
+            display: inline-block;
+            color: var(--takealot-blue);
+            text-decoration: none;
+            font-size: 13.5px;
+            margin: 6px 0 8px;
+        }
+        .brand-link:hover {
+            text-decoration: underline;
+        }
+
+        .rating-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+        .star-gold {
+            color: #f5a623;
+            font-size: 13px;
+        }
+        .rating-num {
+            font-weight: 600;
+            color: #222;
+        }
+        .reviews-link {
+            color: var(--takealot-blue);
+            text-decoration: none;
+        }
+
+        /* 5. Price & Fast Delivery (Image 4) */
+        .price-section {
+            padding: 0 16px 14px;
+            background: #fff;
+        }
+        .price-line {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .price-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: #222;
+        }
+        .price-old {
+            font-size: 13.5px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        .info-circle {
+            color: #999;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .delivery-rocket-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            color: #222;
+            margin-bottom: 12px;
+        }
+        .rocket-icon-wrap {
+            background: #eaf6ed;
+            color: #168744;
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+        .tcs-link {
+            color: var(--takealot-blue);
+            text-decoration: none;
+            margin-left: 2px;
+        }
+
+        /* Location Card */
+        .location-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #444;
+            margin-bottom: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .location-card:active {
+            background: #fbfbfb;
+            border-color: #0b79bf;
+        }
+        .location-card-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .location-card-left i {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 6. Blue Banner TakealotMORE (Image 3) */
+        .takealotmore-top-banner {
+            background: #eef6fc;
+            padding: 9px 16px;
+            text-align: center;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--takealot-blue);
+            letter-spacing: 0.3px;
+        }
+
+        /* 7. What's Hot in this Category (Image 3) */
+        .category-hot-sec {
+            padding: 16px 16px 14px;
+            background: #fff;
+        }
+        .hot-carousel {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+        }
+        .hot-carousel::-webkit-scrollbar {
+            display: none;
+        }
+        .hot-card {
+            flex: 0 0 190px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            background: #fff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .hot-card.active-selection {
+            border: 2px solid var(--takealot-blue);
+            background: #fbfdff;
+            box-shadow: 0 2px 8px rgba(11, 121, 191, 0.18);
+        }
+        .hot-selected-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: var(--takealot-blue);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+            display: none;
+            align-items: center;
+            gap: 3px;
+        }
+        .hot-card.active-selection .hot-selected-badge {
+            display: flex;
+        }
+
+        /* Variation Selector Block */
+        .variation-selector-sec {
+            background: #fff;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--takealot-border);
+        }
+        .variation-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 9px;
+            font-size: 13px;
+            color: #444;
+        }
+        .variation-header-row strong {
+            color: #111;
+            font-weight: 700;
+        }
+        .variation-pills-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .variation-pills-row::-webkit-scrollbar {
+            display: none;
+        }
+        .var-pill {
+            flex-shrink: 0;
+            padding: 8px 14px;
+            border: 1.5px solid #dcdcdc;
+            border-radius: 20px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2b2b2b;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        .var-pill:active {
+            transform: scale(0.97);
+        }
+        .var-pill.active {
+            border-color: var(--takealot-blue);
+            background: #f0f7fd;
+            color: var(--takealot-blue);
+            font-weight: 700;
+            box-shadow: 0 1px 4px rgba(11, 121, 191, 0.15);
+        }
+        .var-pill .pill-badge {
+            font-size: 9.5px;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 8px;
+            background: #eb1c24;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .hot-badges {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            z-index: 2;
+        }
+        .hot-wishlist-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: #777;
+            font-size: 15px;
+            cursor: pointer;
+            z-index: 2;
+        }
+        .hot-img-wrap {
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 6px 0 10px;
+        }
+        .hot-img-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .hot-title {
+            font-size: 12.5px;
+            color: #222;
+            font-weight: 500;
+            line-height: 1.35;
+            height: 34px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        .hot-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            margin-bottom: 6px;
+        }
+        .hot-price {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #222;
+        }
+        .hot-old-price {
+            font-size: 11.5px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        .hot-rating {
+            font-size: 11.5px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 8. Divider */
+        .divider {
+            height: 10px;
+            background: #f4f4f4;
+            border-top: 1px solid #ebebeb;
+            border-bottom: 1px solid #ebebeb;
+        }
+
+        /* 9. Sold By (Image 3) */
+        .sold-by-sec {
+            padding: 14px 16px;
+            background: #fff;
+            font-size: 13.5px;
+        }
+        .sold-by-header {
+            color: #444;
+            margin-bottom: 10px;
+        }
+        .sold-by-header a {
+            color: var(--takealot-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .seller-score-box {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+        .seller-score-left {
+            color: #333;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .seller-score-left i {
+            color: #168744;
+            font-size: 13px;
+        }
+        .seller-score-right {
+            color: var(--takealot-blue);
+            font-weight: 600;
+        }
+
+        /* 10. takealot.credit (Image 3) */
+        .credit-sec {
+            padding: 14px 16px;
+            background: #fff;
+        }
+        .credit-card-box {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 13px;
+            color: #333;
+        }
+        .credit-logo-row {
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            font-size: 15px;
+            letter-spacing: -0.2px;
+        }
+        .credit-logo-row span {
+            color: #777;
+            font-weight: 600;
+        }
+        .credit-desc {
+            color: #444;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            font-size: 12.5px;
+        }
+        .more-banner-inner {
+            background: #f7f9fa;
+            border: 1px solid #e8ebee;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .more-banner-inner strong {
+            color: var(--takealot-blue);
+        }
+        .more-banner-inner strong span {
+            color: #eb1c24;
+        }
+        .credit-options-link {
+            text-align: right;
+        }
+        .credit-options-link a {
+            color: var(--takealot-blue);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 11. Rewards eBucks & Discovery (Image 1) */
+        .rewards-sec {
+            padding: 12px 16px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .reward-pill-row {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+        .reward-pill-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .eb-icon {
+            background: #ff9800;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .disc-icon {
+            color: #222;
+            font-weight: 800;
+            font-size: 15px;
+        }
+        .reward-val {
+            font-weight: 500;
+            color: #222;
+        }
+
+        /* 12. In Stock & Trust Rules (Image 1) */
+        .stock-rules-sec {
+            padding: 14px 16px;
+            background: #fff;
+        }
+        .stock-header-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13.5px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .stock-header-row a {
+            color: var(--takealot-blue);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 12.5px;
+            margin-left: 2px;
+        }
+        .tag-pill {
+            background: #f0f2f5;
+            color: #555;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .trust-rule-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-top: 1px dashed #e8e8e8;
+            font-size: 13px;
+            color: #333;
+        }
+        .trust-rule-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .trust-rule-left i {
+            color: #666;
+            width: 16px;
+            text-align: center;
+        }
+        .green-info-i {
+            color: #168744;
+            font-size: 14px;
+        }
+
+        /* 13. Description (Image 1) */
+        .desc-sec {
+            padding: 16px 16px;
+            background: #fff;
+        }
+        .sec-title {
+            font-size: 15.5px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 10px;
+        }
+        .desc-body {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.5;
+            max-height: 120px;
+            overflow: hidden;
+            position: relative;
+            transition: max-height 0.3s ease;
+        }
+        .desc-fade {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to top, #fff, rgba(255,255,255,0));
+            pointer-events: none;
+        }
+        .pill-show-more {
+            display: block;
+            width: 100%;
+            background: #fff;
+            border: 1px solid #222;
+            border-radius: 24px;
+            padding: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #222;
+            text-align: center;
+            margin-top: 14px;
+            cursor: pointer;
+        }
+        .pill-show-more:hover {
+            background: #f7f7f7;
+        }
+        
+        .report-product-row {
+            padding: 12px 16px 16px;
+            background: #fff;
+            border-top: 1px solid #ebebeb;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .report-product-row a {
+            color: var(--takealot-blue);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 14. Horizontal Offer Cards (Matching Screenshot Image 2) */
+        .fulfillment-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 14px 16px;
+            background: #fff;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+        }
+        .fulfillment-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .offer-card {
+            flex: 0 0 210px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .offer-card.active {
+            border: 2px solid #0076ff;
+            background: #fbfdff;
+        }
+        .offer-card-price {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .offer-card-price .main {
+            font-size: 16px;
+            font-weight: 700;
+            color: #222;
+        }
+        .offer-card-price .old {
+            font-size: 12px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        .warehouse-tags {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 8px;
+            font-size: 11.5px;
+        }
+        .offer-delivery-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .offer-rating {
+            font-size: 11.5px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        /* 15. Product Information Table (Image 2) */
+        .spec-sec {
+            padding: 16px 16px;
+            background: #fff;
+        }
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .spec-table tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .spec-table td {
+            padding: 10px 0;
+        }
+        .spec-table .col-label {
+            color: #666;
+            width: 35%;
+        }
+        .spec-table .col-val {
+            color: #222;
+        }
+        .spec-table .col-val a {
+            color: var(--takealot-blue);
+            text-decoration: none;
+        }
+
+        /* 16. Reviews Section (Image 2) */
+        .reviews-sec {
+            padding: 16px 16px 20px;
+            background: #fff;
+        }
+        .reviews-header-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .reviews-rating-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: #555;
+        }
+        .review-single-card {
+            background: #fbfbfb;
+            border: 1px solid #ebebeb;
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .review-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 12.5px;
+            color: #444;
+        }
+        .review-card-text {
+            color: #333;
+            line-height: 1.45;
+        }
+        .read-more-link {
+            color: var(--takealot-blue);
+            text-decoration: none;
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+        .view-all-reviews {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .view-all-reviews a {
+            color: var(--takealot-blue);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Review Ratings Breakdown & Filters */
+        .rating-breakdown-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 14px;
+            background: #fcfcfc;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 14px;
+        }
+        .rating-left-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+            border-right: 1px solid #e5e5e5;
+            padding-right: 14px;
+        }
+        .big-score {
+            font-size: 32px;
+            font-weight: 800;
+            color: #222;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .stars-gold {
+            color: #f5a623;
+            font-size: 13px;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .total-count {
+            font-size: 11px;
+            color: #777;
+        }
+        .rating-bars-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .rating-bar-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10.5px;
+            color: #666;
+        }
+        .rating-bar-line span:first-child {
+            width: 22px;
+            font-weight: 600;
+        }
+        .rating-bar-line span:last-child {
+            width: 26px;
+            text-align: right;
+        }
+        .bar-track {
+            flex: 1;
+            height: 6px;
+            background: #ebebeb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            background: #f5a623;
+            border-radius: 3px;
+        }
+        .review-filter-chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+            scrollbar-width: none;
+        }
+        .review-filter-chips::-webkit-scrollbar {
+            display: none;
+        }
+        .review-chip {
+            flex-shrink: 0;
+            padding: 5px 11px;
+            background: #f3f3f3;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 11.5px;
+            color: #444;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .review-chip.active {
+            background: #eaf3fa;
+            border-color: var(--takealot-blue);
+            color: var(--takealot-blue);
+            font-weight: 600;
+        }
+        .verified-buyer-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            color: #007a3d;
+            font-size: 10.5px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+        .load-more-reviews-btn {
+            width: 100%;
+            padding: 10px;
+            background: #f7f9fa;
+            border: 1px solid #d4e2ed;
+            border-radius: 6px;
+            color: var(--takealot-blue);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .load-more-reviews-btn:hover {
+            background: #edf5fc;
+        }
+
+        /* 17. STICKY BOTTOM ACTION BAR (Exact Match to ALL Screenshots!) */
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border-top: 1px solid #e0e0e0;
+            padding: 8px 16px 12px;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+            z-index: 999;
+        }
+        .footer-inner {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .footer-price-row {
+            font-size: 13.5px;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .footer-price-row strong {
+            font-size: 15px;
+            color: #111;
+        }
+        .footer-buttons-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pink-wishlist-btn {
+            background: #fff;
+            border: 1.5px solid var(--pink-border);
+            border-radius: 24px;
+            height: 42px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--pink-accent);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .pink-wishlist-btn:active {
+            background: #fce4ec;
+        }
+        .green-add-to-cart-btn {
+            flex: 1;
+            background: var(--takealot-green);
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14.5px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(22, 135, 68, 0.25);
+            transition: background 0.15s, transform 0.1s;
+        }
+        .green-add-to-cart-btn:hover {
+            background: var(--takealot-green-dark);
+        }
+        .green-add-to-cart-btn:active {
+            transform: scale(0.99);
+        }
+
+        /* 18. Delivery Location Modal (Takealot Mobile Bottom Sheet) */
+        .location-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+            backdrop-filter: blur(2px);
+        }
+        .location-modal-backdrop.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .location-modal-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 100%);
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            z-index: 2001;
+            box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.18);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 82vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .location-modal-backdrop.open .location-modal-sheet {
+            transform: translate(-50%, 0);
+        }
+        .modal-drag-handle {
+            width: 36px;
+            height: 4px;
+            background: #dcdcdc;
+            border-radius: 2px;
+            margin: 8px auto 6px;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 18px 12px;
+            border-bottom: 1px solid #ebebeb;
+        }
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #666;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-subtitle {
+            padding: 12px 18px 6px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+        .modal-search-box {
+            padding: 8px 18px 10px;
+            position: relative;
+        }
+        .modal-search-box i {
+            position: absolute;
+            left: 32px;
+            top: 22px;
+            color: #888;
+            font-size: 14px;
+        }
+        .modal-search-input {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px 0 38px;
+            border: 1.5px solid #0b79bf;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #222;
+            outline: none;
+            background: #fff;
+        }
+        .modal-search-input:focus {
+            box-shadow: 0 0 0 3px rgba(11, 121, 191, 0.15);
+        }
+        .modal-search-input:-webkit-autofill,
+        .modal-search-input:-webkit-autofill:hover,
+        .modal-search-input:-webkit-autofill:focus,
+        .modal-search-input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+            -webkit-text-fill-color: #222 !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+        .use-gps-btn {
+            margin: 0 18px 12px;
+            padding: 11px 14px;
+            background: #f0f7fd;
+            border: 1px solid #c9e2f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #0b79bf;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .use-gps-btn:active {
+            background: #e2f0fb;
+        }
+        .locations-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 18px 24px;
+        }
+        .locations-list-title {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .location-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+        .location-item:hover, .location-item:active {
+            background: #f7f9fa;
+        }
+        .location-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .location-item-left i {
+            color: #0b79bf;
+            font-size: 15px;
+        }
+        .location-item-city {
+            font-size: 14px;
+            font-weight: 600;
+            color: #222;
+        }
+        .location-item-province {
+            font-size: 12px;
+            color: #777;
+            margin-top: 2px;
+        }
+        .location-item-arrow {
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        /* Toast notification */
+        .location-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #168744;
+            color: #fff;
+            padding: 11px 22px;
+            border-radius: 24px;
+            font-size: 13.5px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+            z-index: 3000;
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .location-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+<div class="main-wrapper">
+    <!-- 1. Header (Image 4) -->
+    <header>
+        <button class="header-btn" title="Menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo-wrap">
+            <a href="index.html">
+                <img src="imagens/takealot-logo.svg" alt="Takealot" />
+            </a>
+        </div>
+        <div class="header-actions">
+            <a href="javascript:void(0)" title="Search"><i class="fas fa-search"></i></a>
+            <a href="javascript:void(0)" onclick="goToCart()" title="Cart" class="cart-icon-btn">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-badge-dot" id="header-cart-badge">1</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- 2. Location Bar (Image 4) -->
+    <div class="location-bar" onclick="openLocationModal()">
+        <div class="location-bar-left">
+            <i class="fas fa-location-dot" id="top-location-icon"></i>
+            <span id="top-location-text">Set your location</span>
+        </div>
+        <span class="location-bar-add" id="top-location-action">Add</span>
+    </div>
+
+    <!-- 3. Product Gallery Box (Image 4) -->
+    <div class="gallery-box">
+        <div class="badge-col">
+            <div class="badge-black">Black<br>November.</div>
+            <div class="badge-blue" id="main-discount-badge">80%<br>OFF</div>
+        </div>
+        <button class="expand-btn" title="View Fullscreen">
+            <i class="fas fa-expand"></i>
+        </button>
+        
+        <div class="carousel" id="carousel">
+            <div class="carousel-slide"><img src="imagens/tv_65_1.png" alt="Hisense 65 Inch E7Q QLED TV 1" /></div>
+            <div class="carousel-slide"><img src="imagens/tv_65_2.png" alt="Hisense 65 Inch E7Q QLED TV 2" /></div>
+            <div class="carousel-slide"><img src="imagens/tv_65_3.png" alt="Hisense 65 Inch E7Q QLED TV 3" /></div>
+            <div class="carousel-slide"><img src="imagens/tv_65_4.png" alt="Hisense 65 Inch E7Q QLED TV 4" /></div>
+            <div class="carousel-slide"><img src="imagens/tv_65_5.png" alt="Hisense 65 Inch E7Q QLED TV 5" /></div>
+        </div>
+        
+        <div class="dots-row" id="dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+
+    <!-- 4. Title & Brand & Rating (Image 4) -->
+    <div class="product-meta">
+        <div class="title-row">
+            <h1 class="product-title" id="main-product-title">Hisense 65" E7Q 4K QLED Smart TV</h1>
+            <button class="share-circle-btn" title="Share">
+                <i class="fas fa-share-nodes"></i>
+            </button>
+        </div>
+        <a href="#" class="brand-link">Hisense</a>
+        <div class="rating-row">
+            <i class="fas fa-star star-gold"></i>
+            <span class="rating-num">4.9</span>
+            <a href="#reviews" class="reviews-link">3918 Reviews</a>
+        </div>
+    </div>
+
+    <!-- 5. Pricing & Fast Delivery (Image 4) -->
+    <div class="price-section">
+        <div class="price-line">
+            <span class="price-val" id="main-price-display">R 1,199</span>
+            <span class="price-old" id="main-old-price">R 4,999</span>
+            <i class="fas fa-circle-info info-circle" title="Price Information"></i>
+        </div>
+        
+        <div class="delivery-rocket-badge">
+            <div class="rocket-icon-wrap">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <span>Get it Tomorrow, 7am - 7pm</span>
+            <a href="#" class="tcs-link">T&amp;Cs Apply</a>
+        </div>
+
+        <div class="location-card" onclick="openLocationModal()">
+            <div class="location-card-left">
+                <i class="fas fa-location-dot" id="card-location-icon"></i>
+                <span id="card-location-text">Set your location</span>
+            </div>
+            <span class="location-bar-add" id="card-location-action">Add</span>
+        </div>
+    </div>
+
+    <!-- Product Variation / Size Selector -->
+    <div class="variation-selector-sec">
+        <div class="variation-header-row">
+            <span>Screen Size / Option: <strong id="selected-size-label">65"</strong></span>
+            <span style="font-size: 11.5px; color: var(--takealot-blue); font-weight: 600;"><i class="fas fa-sliders" style="margin-right: 3px;"></i> Choose variant</span>
+        </div>
+        <div class="variation-pills-row">
+            <button class="var-pill" data-var-key="43" onclick="selectProductVariation('43')">
+                43" <span class="pill-badge">R 1,499</span>
+            </button>
+            <button class="var-pill" data-var-key="55" onclick="selectProductVariation('55')">
+                55" <span class="pill-badge">R 2,159</span>
+            </button>
+            <button class="var-pill active" data-var-key="65" onclick="selectProductVariation('65')">
+                65" <span class="pill-badge" style="background: #007a3d;">Hot R 1,199</span>
+            </button>
+            <button class="var-pill" data-var-key="75" onclick="selectProductVariation('75')">
+                75" <span class="pill-badge">R 3,419</span>
+            </button>
+            <button class="var-pill" data-var-key="65-bundle" onclick="selectProductVariation('65-bundle')">
+                65" + Bracket <span class="pill-badge">R 2,839</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 6. TakealotMORE Banner (Image 3) -->
+    <div class="takealotmore-top-banner">
+        FREE NEXT DAY WITH TAKEALOTMORE
+    </div>
+
+    <!-- 7. What's Hot in this Category (Variations of the same TV series) -->
+    <div class="category-hot-sec">
+        <div class="sec-title" style="margin-bottom: 12px;">What's Hot in this Category</div>
+        <div class="hot-carousel">
+            <!-- Variation 1: 43 Inch Version -->
+            <div class="hot-card" data-var-key="43" onclick="selectProductVariation('43', true)">
+                <div class="hot-badges">
+                    <div class="badge-black">Black<br>November.</div>
+                    <div class="badge-blue">75%<br>OFF</div>
+                </div>
+                <button class="hot-wishlist-btn" title="Wishlist" onclick="event.stopPropagation();"><i class="far fa-heart"></i></button>
+                <div class="hot-img-wrap">
+                    <img src="imagens/tv_43_1.png" alt="Hisense 43 Inch E7Q QLED TV" />
+                </div>
+                <div class="hot-title">Hisense 43" E7Q 4K QLED Smart TV</div>
+                <div class="hot-price-row">
+                    <span class="hot-price">R 1,499</span>
+                    <span class="hot-old-price">R 5,999</span>
+                    <i class="fas fa-circle-info info-circle"></i>
+                </div>
+                <div class="hot-rating">
+                    <i class="fas fa-star star-gold"></i> 4.8 (112)
+                </div>
+                <div class="hot-selected-badge"><i class="fas fa-check"></i> Selected</div>
+            </div>
+
+            <!-- Variation 2: 55 Inch Version -->
+            <div class="hot-card" data-var-key="55" onclick="selectProductVariation('55', true)">
+                <div class="hot-badges">
+                    <div class="badge-black">Black<br>November.</div>
+                    <div class="badge-blue">76%<br>OFF</div>
+                </div>
+                <button class="hot-wishlist-btn" title="Wishlist" onclick="event.stopPropagation();"><i class="far fa-heart"></i></button>
+                <div class="hot-img-wrap">
+                    <img src="imagens/tv_55_1.png" alt="Hisense 55 Inch E7Q QLED TV" />
+                </div>
+                <div class="hot-title">Hisense 55" E7Q 4K QLED Smart TV</div>
+                <div class="hot-price-row">
+                    <span class="hot-price">R 2,159</span>
+                    <span class="hot-old-price">R 4,999</span>
+                    <i class="fas fa-circle-info info-circle"></i>
+                </div>
+                <div class="hot-rating">
+                    <i class="fas fa-star star-gold"></i> 4.9 (3918)
+                </div>
+                <div class="hot-selected-badge"><i class="fas fa-check"></i> Selected</div>
+            </div>
+
+            <!-- Variation 3: 65 Inch Hero Version (Selected) -->
+            <div class="hot-card active-selection" data-var-key="65" onclick="selectProductVariation('65', true)">
+                <div class="hot-badges">
+                    <div class="badge-black">Black<br>November.</div>
+                    <div class="badge-blue">80%<br>OFF</div>
+                </div>
+                <button class="hot-wishlist-btn" title="Wishlist" onclick="event.stopPropagation();"><i class="far fa-heart"></i></button>
+                <div class="hot-img-wrap">
+                    <img src="imagens/tv_65_1.png" alt="Hisense 65 Inch E7Q QLED TV" />
+                </div>
+                <div class="hot-title">Hisense 65" E7Q 4K QLED Smart TV</div>
+                <div class="hot-price-row">
+                    <span class="hot-price">R 1,199</span>
+                    <span class="hot-old-price">R 4,999</span>
+                    <i class="fas fa-circle-info info-circle"></i>
+                </div>
+                <div class="hot-rating">
+                    <i class="fas fa-star star-gold"></i> 4.9 (245)
+                </div>
+                <div class="hot-selected-badge"><i class="fas fa-check"></i> Selected</div>
+            </div>
+
+            <!-- Variation 4: 75 Inch Version -->
+            <div class="hot-card" data-var-key="75" onclick="selectProductVariation('75', true)">
+                <div class="hot-badges">
+                    <div class="badge-blue">82%<br>OFF</div>
+                </div>
+                <button class="hot-wishlist-btn" title="Wishlist" onclick="event.stopPropagation();"><i class="far fa-heart"></i></button>
+                <div class="hot-img-wrap">
+                    <img src="imagens/tv_75_1.png" alt="Hisense 75 Inch E7Q QLED TV" />
+                </div>
+                <div class="hot-title">Hisense 75" E7Q 4K QLED Smart TV</div>
+                <div class="hot-price-row">
+                    <span class="hot-price">R 3,419</span>
+                    <span class="hot-old-price">R 18,999</span>
+                    <i class="fas fa-circle-info info-circle"></i>
+                </div>
+                <div class="hot-rating">
+                    <i class="fas fa-star star-gold"></i> 4.9 (88)
+                </div>
+                <div class="hot-selected-badge"><i class="fas fa-check"></i> Selected</div>
+            </div>
+
+            <!-- Variation 5: 65 Inch TV + Wall Bracket Bundle -->
+            <div class="hot-card" data-var-key="65-bundle" onclick="selectProductVariation('65-bundle', true)">
+                <div class="hot-badges">
+                    <div class="badge-black">Black<br>November.</div>
+                    <div class="badge-blue">79%<br>OFF</div>
+                </div>
+                <button class="hot-wishlist-btn" title="Wishlist" onclick="event.stopPropagation();"><i class="far fa-heart"></i></button>
+                <div class="hot-img-wrap">
+                    <img src="imagens/tv_bundle_1.png" alt="Hisense 65 Inch E7Q TV + Wall Bracket" />
+                </div>
+                <div class="hot-title">Hisense 65" E7Q 4K QLED TV + Fixed Wall Mount Bracket Bundle</div>
+                <div class="hot-price-row">
+                    <span class="hot-price">R 2,839</span>
+                    <span class="hot-old-price">R 13,499</span>
+                    <i class="fas fa-circle-info info-circle"></i>
+                </div>
+                <div class="hot-rating">
+                    <i class="fas fa-star star-gold"></i> 4.8 (64)
+                </div>
+                <div class="hot-selected-badge"><i class="fas fa-check"></i> Selected</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 8. Sold By Section (Image 3) -->
+    <div class="sold-by-sec">
+        <div class="sold-by-header">
+            Sold by <a href="#">Hisense South Africa</a> • Official Store • VAT Registered <i class="fas fa-circle-info info-circle"></i>
+        </div>
+        <div class="seller-score-box">
+            <div class="seller-score-left">
+                <span>Seller Score</span>
+                <i class="fas fa-circle-info green-info-i"></i>
+            </div>
+            <div class="seller-score-right">
+                ★ 4.8 • 5,463 Reviews
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 9. takealot.credit (Image 3) -->
+    <div class="credit-sec">
+        <div class="credit-card-box">
+            <div class="credit-logo-row">
+                takealot<span>.credit</span>
+            </div>
+            <div class="credit-desc">
+                Buy using <strong>takealot.credit</strong> for <strong id="credit-installment">R 217 p/m x 12 months</strong> and get <strong>1%</strong> of your purchase back*.
+            </div>
+            <div class="more-banner-inner">
+                Get 3% with <strong>takealot<span>more</span></strong>
+            </div>
+            <div class="credit-options-link">
+                <a href="#">More Credit Options</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. Rewards (Image 1) -->
+    <div class="rewards-sec">
+        <div class="reward-pill-row">
+            <div class="reward-pill-left">
+                <div class="eb-icon">eB</div>
+                <span style="color: #ff9800; font-weight: 700;">eBucks</span>
+            </div>
+            <div class="reward-val" id="reward-ebucks-val">eB25,990</div>
+        </div>
+        <div class="reward-pill-row">
+            <div class="reward-pill-left">
+                <span class="disc-icon">Ð</span>
+                <span style="color: #222; font-weight: 700; font-size: 13px; letter-spacing: 0.3px;">Discovery MILES</span>
+            </div>
+            <div class="reward-val" id="reward-miles-val">25,990</div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 11. In Stock & Trust Rules (Image 1) -->
+    <div class="stock-rules-sec">
+        <div class="stock-header-row">
+            <span>In stock</span>
+            <span class="tag-pill">CPT</span>
+            <span class="tag-pill">DBN</span>
+            <span class="tag-pill">JHB</span>
+            <a href="#">Learn More</a>
+        </div>
+        
+        <div class="trust-rule-item">
+            <div class="trust-rule-left">
+                <i class="fas fa-shield-check" style="color: var(--takealot-green);"></i>
+                <span>Safe &amp; Secure Payments</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; flex-shrink: 0;">
+                <img src="imagens/logo_visa.png" alt="Visa" style="height: 12px; width: auto; object-fit: contain; flex-shrink: 0;" />
+                <img src="imagens/logo_mastercard.png" alt="Mastercard" style="height: 16px; width: auto; object-fit: contain; flex-shrink: 0;" />
+                <img src="imagens/logo_amex.png" alt="American Express" style="height: 11px; width: auto; object-fit: contain; flex-shrink: 0;" />
+                <img src="imagens/logo_applepay.png" alt="Apple Pay" style="height: 12px; width: auto; object-fit: contain; flex-shrink: 0;" />
+                <img src="imagens/logo_gpay.png" alt="Google Pay" style="height: 12px; width: auto; object-fit: contain; flex-shrink: 0;" />
+                <img src="imagens/logo_payfast.png" alt="Instant EFT" style="height: 12px; width: auto; object-fit: contain; flex-shrink: 0;" />
+            </div>
+        </div>
+        <div class="trust-rule-item">
+            <div class="trust-rule-left">
+                <i class="fas fa-rotate-left"></i>
+                <span>Hassle-Free Exchanges &amp; Returns for 30 Days.</span>
+            </div>
+            <i class="fas fa-circle-info green-info-i"></i>
+        </div>
+        <div class="trust-rule-item">
+            <div class="trust-rule-left">
+                <i class="far fa-calendar"></i>
+                <span>48-Month Limited Warranty.</span>
+            </div>
+            <i class="fas fa-circle-info green-info-i"></i>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 12. Description (Image 1) -->
+    <div class="desc-sec">
+        <div class="sec-title">Description</div>
+        <div class="desc-body" id="desc-body">
+            <p style="margin-bottom: 8px;">Experience over a billion vivid, accurate shades with the Hisense 65" E7Q 4K UHD QLED Smart TV. Featuring Quantum Dot Technology, AI 4K Upscaler, Dolby Vision HDR, Dolby Atmos multi-dimensional audio, AI Sports Mode, and Game Mode PLUS with ultra-low input lag on the fluid VIDAA Smart TV platform.</p>
+            <p style="margin-bottom: 6px; font-weight: 600;">Features;</p>
+            <ul style="padding-left: 18px; margin-bottom: 8px; line-height: 1.5;">
+                <li>Quantum Dot (QLED) technology with over a billion shades of realistic color</li>
+                <li>4K Ultra HD (3840 x 2160) with AI 4K Upscaler &amp; Direct Full Array</li>
+                <li>Dolby Vision HDR, HDR10+ and Dolby Atmos immersive surround sound</li>
+                <li>VIDAA Smart TV OS with Netflix, YouTube, Prime Video, Disney+, Showmax &amp; DStv Stream</li>
+                <li>Game Mode PLUS with ALLM, VRR 60Hz and AI Smooth Motion</li>
+                <li>Voice Control Remote with built-in Alexa &amp; VIDAA Voice</li>
+            </ul>
+            <div class="desc-fade" id="desc-fade"></div>
+        </div>
+        <button class="pill-show-more" id="desc-toggle-btn">Show More</button>
+    </div>
+
+    <div class="report-product-row">
+        <a href="#">
+            <i class="fas fa-flag"></i> Report this product
+        </a>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 13. Horizontal Fulfillment Offer Cards (Image 2) -->
+    <div class="fulfillment-scroll">
+        <!-- Option 1: Selected -->
+        <div class="offer-card active" onclick="pickOffer(this, '2599')">
+            <div class="offer-card-price">
+                <span class="main">R 1,199</span>
+                <span class="old">R 4,999</span>
+                <i class="fas fa-circle-info info-circle"></i>
+            </div>
+            <div class="warehouse-tags">
+                <span style="font-size: 11px; color: #444;">In stock</span>
+                <span class="tag-pill">CPT</span>
+                <span class="tag-pill">DBN</span>
+                <span class="tag-pill">JHB</span>
+            </div>
+            <div class="offer-delivery-line">
+                <div class="rocket-icon-wrap" style="width: 18px; height: 18px; font-size: 9px;"><i class="fas fa-rocket"></i></div>
+                <span style="font-size: 11.5px;">Get it Tomorrow, 7am - 7pm</span>
+            </div>
+            <div class="offer-rating">
+                <i class="fas fa-star" style="color: #f5a623;"></i>
+                <span>4.9 (43)</span>
+            </div>
+        </div>
+
+        <!-- Option 2 -->
+        <div class="offer-card" onclick="pickOffer(this, '2899')">
+            <div class="offer-card-price">
+                <span class="main">R 2,899</span>
+                <span class="old">R 4,999</span>
+                <i class="fas fa-circle-info info-circle"></i>
+            </div>
+            <div style="font-size: 11.5px; color: #555; margin-bottom: 8px;">
+                Ships in 3 - 5 work days
+            </div>
+            <div class="offer-delivery-line">
+                <i class="far fa-calendar" style="color: #666; font-size: 12px;"></i>
+                <span style="font-size: 11.5px;" id="card2-date">Delivery 24 Nov - 27 Nov</span>
+            </div>
+            <div class="offer-rating">
+                <i class="fas fa-star" style="color: #f5a623;"></i>
+                <span>4.8 (12)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 14. Product Information (Image 2) -->
+    <div class="spec-sec">
+        <div class="sec-title">Product Information</div>
+        <table class="spec-table">
+            <tr>
+                <td class="col-label">Categories</td>
+                <td class="col-val"><a href="#">TV, Audio &amp; Video</a> / <a href="#">Televisions</a> / <a href="#">Smart TVs</a></td>
+            </tr>
+            <tr>
+                <td class="col-label">Brand</td>
+                <td class="col-val"><a href="#">Hisense</a></td>
+            </tr>
+            <tr>
+                <td class="col-label">Warranty</td>
+                <td class="col-val">Limited (48 months)</td>
+            </tr>
+            <tr>
+                <td class="col-label">Smart TV</td>
+                <td class="col-val">Yes (VIDAA OS)</td>
+            </tr>
+            <tr>
+                <td class="col-label">Screen Size</td>
+                <td class="col-val" id="spec-screen-size">65.0</td>
+            </tr>
+            <!-- Extra spec rows that expand on Show More -->
+            <tr class="extra-spec-row" style="display: none;">
+                <td class="col-label">Display Technology</td>
+                <td class="col-val">QLED (Quantum Dot LED)</td>
+            </tr>
+            <tr class="extra-spec-row" style="display: none;">
+                <td class="col-label">Resolution</td>
+                <td class="col-val">4K Ultra HD (3840 x 2160)</td>
+            </tr>
+            <tr class="extra-spec-row" style="display: none;">
+                <td class="col-label">Refresh Rate</td>
+                <td class="col-val">60Hz Native / Smooth Motion &amp; MEMC</td>
+            </tr>
+            <tr class="extra-spec-row" style="display: none;">
+                <td class="col-label">Audio System</td>
+                <td class="col-val">Dolby Atmos &amp; DTS Virtual:X (20W Stereo Sound)</td>
+            </tr>
+            <tr class="extra-spec-row" style="display: none;">
+                <td class="col-label">Connectivity</td>
+                <td class="col-val">Wi-Fi 5 (Dual Band), Bluetooth 5.0, Ethernet (LAN)</td>
+            </tr>
+            <tr class="extra-spec-row" style="display: none;">
+                <td class="col-label">HDMI Ports</td>
+                <td class="col-val">3x HDMI (HDMI 2.1 eARC supported)</td>
+            </tr>
+            <tr class="extra-spec-row" style="display: none;">
+                <td class="col-label">USB Ports</td>
+                <td class="col-val">2x USB 2.0</td>
+            </tr>
+            <tr class="extra-spec-row" style="display: none;">
+                <td class="col-label">Operating System</td>
+                <td class="col-val">VIDAA U7 (Netflix, YouTube, Prime, Disney+, Showmax, DSTV Stream)</td>
+            </tr>
+            <tr class="extra-spec-row" style="display: none;">
+                <td class="col-label">Model Number</td>
+                <td class="col-val" id="spec-model-number">65E7Q</td>
+            </tr>
+        </table>
+        <button class="pill-show-more" id="spec-toggle-btn" onclick="toggleSpecs()">Show More</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 15. Reviews (Exact Match to Takealot Mobile App) -->
+    <div class="reviews-sec" id="reviews">
+        <div class="reviews-header-line">
+            <div class="sec-title" style="margin-bottom: 0;">Reviews</div>
+            <div class="reviews-rating-tag">
+                <i class="fas fa-star" style="color: #f5a623;"></i>
+                <strong>4.9</strong> 3,918 reviews
+            </div>
+        </div>
+
+        <!-- Rating Breakdown Box -->
+        <div class="rating-breakdown-box">
+            <div class="rating-left-score">
+                <span class="big-score">4.9</span>
+                <div class="stars-gold">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <span class="total-count">3,918 verified ratings</span>
+            </div>
+            <div class="rating-bars-col">
+                <div class="rating-bar-line">
+                    <span>5 ★</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: 94%;"></div></div>
+                    <span>94%</span>
+                </div>
+                <div class="rating-bar-line">
+                    <span>4 ★</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: 5%;"></div></div>
+                    <span>5%</span>
+                </div>
+                <div class="rating-bar-line">
+                    <span>3 ★</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: 1%;"></div></div>
+                    <span>1%</span>
+                </div>
+                <div class="rating-bar-line">
+                    <span>2 ★</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <span>0%</span>
+                </div>
+                <div class="rating-bar-line">
+                    <span>1 ★</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <span>0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Filter Chips -->
+        <div class="review-filter-chips">
+            <button class="review-chip active" onclick="filterReviewsCategory(this, 'all')">All (3,918)</button>
+            <button class="review-chip" onclick="filterReviewsCategory(this, '5star')">5 Stars (3,683)</button>
+            <button class="review-chip" onclick="filterReviewsCategory(this, 'verified')">Verified Buyers (3,892)</button>
+            <button class="review-chip" onclick="filterReviewsCategory(this, 'sound')">Sound Quality (1,120)</button>
+            <button class="review-chip" onclick="filterReviewsCategory(this, 'gaming')">Gaming / 120Hz (742)</button>
+        </div>
+
+        <div id="reviews-list-container">
+            <!-- Review 1 -->
+            <div class="review-single-card">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Jen - 20 Jun 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">16</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">You get what you pay for works like a bomb! The picture quality and sound from the Dolby Atmos speakers are unbelievable. Best purchase this year...</span>
+                    <span class="review-full" style="display: none;">You get what you pay for works like a bomb! The picture quality and sound from the Dolby Atmos speakers are unbelievable. Best purchase this year. The Quantum Dot QLED panel has super deep contrast and colors that pop even in a bright living room. Setup took less than 5 minutes on VIDAA OS. Highly recommend!</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 2 -->
+            <div class="review-single-card">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Thabo - 18 Jun 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">42</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Delivery was as promised by Takealot next day! TV was in good shape, super fast to setup VIDAA OS and PS5 runs silky smooth on Game Mode PLUS...</span>
+                    <span class="review-full" style="display: none;">Delivery was as promised by Takealot next day! TV was in good shape, super fast to setup VIDAA OS and PS5 runs silky smooth on Game Mode PLUS with VRR and ALLM. Zero lag while gaming on modern consoles. Packaging was solid with no screen damage. Very happy with this Hisense E7Q.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 3 -->
+            <div class="review-single-card">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Sipho M. - 14 Jun 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">28</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Fantastic value for money. Replacing an older 43 inch TV and this 65" QLED is a massive upgrade. Soundbar is practically not needed...</span>
+                    <span class="review-full" style="display: none;">Fantastic value for money. Replacing an older 43 inch TV and this 65" QLED is a massive upgrade. Soundbar is practically not needed because the built-in Dolby Atmos audio has punchy bass and crystal clear dialogue. Netflix 4K Dolby Vision looks theatre quality.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 4 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Sarah K. - 09 Jun 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">19</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Great build quality and very thin bezels. Works seamlessly with Apple AirPlay and my DSTV stream app. 10/10 Takealot service...</span>
+                    <span class="review-full" style="display: none;">Great build quality and very thin bezels. Works seamlessly with Apple AirPlay and my DSTV stream app. 10/10 Takealot service, arrived on time via Takealot driver in Johannesburg.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 5 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Francois V. - 02 Jun 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">35</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Top notch HDR brightness. Sports and movies look razor sharp. Very easy remote with voice control that actually understands South African accents...</span>
+                    <span class="review-full" style="display: none;">Top notch HDR brightness. Sports and movies look razor sharp. Very easy remote with voice control that actually understands South African accents! Best value television in SA right now.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 6 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Nandi D. - 28 May 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">51</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">VIDAA Smart TV interface is blazing fast compared to my older TV. The kids love Disney+ and YouTube Kids, and the QLED picture clarity is stunning...</span>
+                    <span class="review-full" style="display: none;">VIDAA Smart TV interface is blazing fast compared to my older TV. The kids love Disney+ and YouTube Kids, and the QLED picture clarity is stunning in daylight without reflections. Arrived nicely packaged in Pretoria with zero issues.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 7 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Kevin P. - 23 May 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">23</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Plugged into my Xbox Series X and Game Mode Plus popped up instantly. 60Hz VRR support with ALLM works out of the box...</span>
+                    <span class="review-full" style="display: none;">Plugged into my Xbox Series X and Game Mode Plus popped up instantly. 60Hz VRR support with ALLM works out of the box. Input lag is non-existent. For this price, there is literally no competition on the market.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 8 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Lerato B. - 19 May 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">38</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Takealot delivery guy in Soweto was very helpful, assisted me to carry the box inside. TV panel is flawless, zero dead pixels...</span>
+                    <span class="review-full" style="display: none;">Takealot delivery guy in Soweto was very helpful, assisted me to carry the box inside. TV panel is flawless, zero dead pixels. The colors on National Geographic and movies look like real life. Very satisfied customer!</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 9 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Willem S. - 14 May 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">14</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Watching the Rugby championship in 4K 60fps was unbelievable. Motion smoothing is subtle and doesn't create soap-opera effect...</span>
+                    <span class="review-full" style="display: none;">Watching the Rugby championship in 4K 60fps was unbelievable. Motion smoothing is subtle and doesn't create soap-opera effect. The Dolby Atmos audio fills a 35sqm room effortlessly. 5 stars all the way.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 10 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Zanele N. - 08 May 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">29</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Wall mounted it in our living room. VESA mounting holes are solid and TV is surprisingly sleek for a 65 inch QLED...</span>
+                    <span class="review-full" style="display: none;">Wall mounted it in our living room. VESA mounting holes are solid and TV is surprisingly sleek for a 65 inch QLED. The cable management at the back is clean and tidy. Highly recommend this Hisense E7Q series.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 11 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>David C. - 03 May 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">47</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">I researched for 3 weeks comparing Samsung QLED, LG and this Hisense 65" E7Q. This Hisense blows them out of the water on value...</span>
+                    <span class="review-full" style="display: none;">I researched for 3 weeks comparing Samsung QLED, LG and this Hisense 65" E7Q. This Hisense blows them out of the water on color richness, VIDAA OS responsiveness and Dolby Atmos sound. Quantum Dot color is magnificent.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 12 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Anelisa M. - 27 Apr 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">18</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Delivered all the way to Bloemfontein within 48 hours in perfect packaging. Everything worked straight out of the box...</span>
+                    <span class="review-full" style="display: none;">Delivered all the way to Bloemfontein within 48 hours in perfect packaging. Everything worked straight out of the box. The remote is ergonomic with dedicated Netflix, YouTube and Prime buttons. Very happy with Takealot!</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 13 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Johan B. - 21 Apr 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">33</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">The ONKYO 2.1 subwoofer on the back of the TV produces deep, rich rumble in action movies. Dialogue is always crisp...</span>
+                    <span class="review-full" style="display: none;">The ONKYO 2.1 subwoofer on the back of the TV produces deep, rich rumble in action movies. Dialogue is always crisp and loud enough even at 25% volume. Fantastic audio engineering.</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+
+            <!-- Review 14 (Expands on View More) -->
+            <div class="review-single-card extra-review" style="display: none;">
+                <div class="review-card-top">
+                    <div>
+                        <strong>Tshepo R. - 15 Apr 2026</strong>
+                        <span class="verified-buyer-pill"><i class="fas fa-circle-check"></i> Verified Purchase</span>
+                    </div>
+                    <span class="review-likes" onclick="toggleHelpful(this)" style="cursor: pointer;"><i class="fas fa-star" style="color: #f5a623;"></i> 5 ( <i class="fas fa-thumbs-up" style="font-size: 11px;"></i> <span class="like-count">25</span> )</span>
+                </div>
+                <div class="review-card-text">
+                    <span class="review-short">Bluetooth 5.2 connects immediately to my headphones so I can watch late night Premier League without waking up the house...</span>
+                    <span class="review-full" style="display: none;">Bluetooth 5.2 connects immediately to my headphones so I can watch late night Premier League without waking up the house. The Wi-Fi 5 connection streams 4K without buffering. Excellent TV!</span>
+                    <a href="javascript:void(0)" class="read-more-link" onclick="toggleReviewText(this)">Read More</a>
+                </div>
+            </div>
+        </div>
+
+        <button class="load-more-reviews-btn" id="load-more-reviews-btn" onclick="loadMoreReviews()">
+            <i class="fas fa-chevron-down" style="margin-right: 6px;"></i> Load More Reviews (3,918 Total)
+        </button>
+
+        <div class="view-all-reviews" style="margin-top: 12px;">
+            <a href="javascript:void(0)" id="view-all-reviews-btn" onclick="toggleAllReviews()">View All (3,918)</a>
+        </div>
+    </div>
+</div>
+
+<!-- 16. Sticky Action Bar (Exact match to all 4 screenshots!) -->
+<div class="sticky-footer">
+    <div class="footer-inner">
+        <div class="footer-price-row">
+            Price: <strong id="footer-price-display">R 1,199</strong>
+        </div>
+        <div class="footer-buttons-row">
+            <button class="pink-wishlist-btn" id="wishlist-btn" onclick="toggleWishlist()">
+                + <span id="heart-icon">♡</span>
+            </button>
+            <button class="green-add-to-cart-btn" id="add-to-cart-btn" onclick="goToCart()">
+                + <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 18. Delivery Location Bottom Sheet Modal -->
+<div class="location-modal-backdrop" id="location-modal-backdrop" onclick="closeLocationModal(event)">
+    <div class="location-modal-sheet" onclick="event.stopPropagation()">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-header">
+            <h3>Select Delivery Location</h3>
+            <button class="modal-close-btn" onclick="closeLocationModal()" title="Close">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-subtitle">
+            Enter your suburb, city or postal code to view delivery options and availability.
+        </div>
+        <form id="location-autofill-form" autocomplete="on" onsubmit="event.preventDefault(); handleAddressAutofillSubmit();">
+            <div class="modal-search-box">
+                <i class="fas fa-search"></i>
+                <label for="location-search-input" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">Enter suburb, city or postal code</label>
+                <input 
+                    type="text" 
+                    id="location-search-input" 
+                    name="street-address" 
+                    class="modal-search-input" 
+                    placeholder="Enter suburb, city or postal code" 
+                    autocomplete="shipping street-address address-line1 address-level2 postal-code" 
+                    oninput="filterLocations(this.value)" 
+                    onchange="handleAddressChange(this)"
+                    onpaste="setTimeout(() => filterLocations(this.value), 50)"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault(); handleAddressAutofillSubmit();}" 
+                    autocapitalize="words"
+                    spellcheck="false"
+                />
+                <!-- Helper fields for browser autofill recognition -->
+                <input type="hidden" name="address-level2" id="autofill-city" autocomplete="shipping address-level2" />
+                <input type="hidden" name="postal-code" id="autofill-postal" autocomplete="shipping postal-code" />
+                <input type="hidden" name="address-level1" id="autofill-province" autocomplete="shipping address-level1" />
+                <input type="hidden" name="country" id="autofill-country" value="ZA" autocomplete="shipping country" />
+            </div>
+        </form>
+        <div class="use-gps-btn" onclick="useCurrentLocation()">
+            <i class="fas fa-crosshairs"></i>
+            <span>Use my current location</span>
+        </div>
+        <div class="locations-list">
+            <div class="locations-list-title">Popular South African Destinations</div>
+            <div id="locations-list-container">
+                <!-- Items populated dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Location Toast Notification -->
+<div class="location-toast" id="location-toast">
+    <i class="fas fa-check-circle"></i>
+    <span>Location updated</span>
+</div>
+
+<script>
+    const productVariations = {
+        "43": {
+            id: "43",
+            size: "43\"",
+            title: "Hisense 43\" E7Q 4K QLED Smart TV",
+            price: "1499",
+            oldPrice: "R 5,999",
+            discount: "75%<br>OFF",
+            credit: "R 125 p/m x 12 months",
+            ebucks: "eB14,990",
+            miles: "14,990",
+            image: "imagens/tv_43_1.png",
+            images: [
+                "imagens/tv_43_1.png",
+                "imagens/tv_43_2.png",
+                "imagens/tv_43_3.png",
+                "imagens/tv_43_4.png",
+                "imagens/tv_43_5.png"
+            ],
+            screenSizeSpec: "43.0",
+            modelSpec: "43E7Q"
+        },
+        "55": {
+            id: "55",
+            size: "55\"",
+            title: "Hisense 55\" E7Q 4K QLED Smart TV",
+            price: "2159",
+            oldPrice: "R 4,999",
+            discount: "76%<br>OFF",
+            credit: "R 180 p/m x 12 months",
+            ebucks: "eB21,590",
+            miles: "21,590",
+            image: "imagens/tv_55_1.png",
+            images: [
+                "imagens/tv_55_1.png",
+                "imagens/tv_55_2.png",
+                "imagens/tv_55_3.png",
+                "imagens/tv_55_4.png",
+                "imagens/tv_55_5.png"
+            ],
+            screenSizeSpec: "55.0",
+            modelSpec: "55E7Q"
+        },
+        "65": {
+            id: "65",
+            size: "65\"",
+            title: "Hisense 65\" E7Q 4K QLED Smart TV",
+            price: 1199,
+            oldPrice: "R 4,999",
+            discount: "80%<br>OFF",
+            credit: "R 217 p/m x 12 months",
+            ebucks: "eB25,990",
+            miles: "25,990",
+            image: "imagens/tv_65_1.png",
+            images: [
+                "imagens/tv_65_1.png",
+                "imagens/tv_65_2.png",
+                "imagens/tv_65_3.png",
+                "imagens/tv_65_4.png",
+                "imagens/tv_65_5.png"
+            ],
+            screenSizeSpec: "65.0",
+            modelSpec: "65E7Q"
+        },
+        "75": {
+            id: "75",
+            size: "75\"",
+            title: "Hisense 75\" E7Q 4K QLED Smart TV",
+            price: "3419",
+            oldPrice: "R 18,999",
+            discount: "82%<br>OFF",
+            credit: "R 285 p/m x 12 months",
+            ebucks: "eB34,190",
+            miles: "34,190",
+            image: "imagens/tv_75_1.png",
+            images: [
+                "imagens/tv_75_1.png",
+                "imagens/tv_75_2.png",
+                "imagens/tv_75_3.png",
+                "imagens/tv_75_4.png",
+                "imagens/tv_75_5.png"
+            ],
+            screenSizeSpec: "75.0",
+            modelSpec: "75E7Q"
+        },
+        "65-bundle": {
+            id: "65-bundle",
+            size: "65\" + Bracket",
+            title: "Hisense 65\" E7Q 4K QLED TV + Fixed Wall Mount Bracket Bundle",
+            price: "2839",
+            oldPrice: "R 13,499",
+            discount: "79%<br>OFF",
+            credit: "R 237 p/m x 12 months",
+            ebucks: "eB28,390",
+            miles: "28,390",
+            image: "imagens/tv_bundle_1.png",
+            images: [
+                "imagens/tv_bundle_1.png",
+                "imagens/tv_bundle_2.png",
+                "imagens/tv_bundle_3.png",
+                "imagens/tv_bundle_4.png",
+                "imagens/tv_bundle_5.png"
+            ],
+            screenSizeSpec: "65.0 (+ Fixed Wall Mount Bracket)",
+            modelSpec: "65E7Q-BNDL"
+        }
+    };
+
+    let selectedVariationKey = "65";
+    let selectedPrice = "2599";
+    let selectedTitle = "Hisense 65\" E7Q 4K QLED Smart TV";
+    let selectedImage = "imagens/tv_65_1.png";
+
+    function selectProductVariation(varKey, shouldScroll) {
+        const item = productVariations[varKey];
+        if (!item) return;
+
+        selectedVariationKey = varKey;
+        selectedPrice = item.price;
+        selectedTitle = item.title;
+        selectedImage = item.image;
+
+        const formattedPrice = parseInt(item.price).toLocaleString("en-ZA");
+
+        // 1. Update Title
+        const titleEl = document.getElementById('main-product-title');
+        if (titleEl) titleEl.textContent = item.title;
+
+        // 2. Update Prices
+        const priceDisplay = document.getElementById('main-price-display');
+        if (priceDisplay) priceDisplay.textContent = `R ${formattedPrice}`;
+        const footerPrice = document.getElementById('footer-price-display');
+        if (footerPrice) footerPrice.textContent = `R ${formattedPrice}`;
+        const oldPriceEl = document.getElementById('main-old-price');
+        if (oldPriceEl) oldPriceEl.textContent = item.oldPrice;
+
+        // 3. Update Discount Badge
+        const discountBadge = document.getElementById('main-discount-badge');
+        if (discountBadge) discountBadge.innerHTML = item.discount;
+
+        // 4. Update Credit & Rewards
+        const creditEl = document.getElementById('credit-installment');
+        if (creditEl) creditEl.textContent = item.credit;
+        const ebucksEl = document.getElementById('reward-ebucks-val');
+        if (ebucksEl) ebucksEl.textContent = item.ebucks;
+        const milesEl = document.getElementById('reward-miles-val');
+        if (milesEl) milesEl.textContent = item.miles;
+
+        // 5. Update Spec Table
+        const specSize = document.getElementById('spec-screen-size');
+        if (specSize) specSize.textContent = item.screenSizeSpec;
+        const specModel = document.getElementById('spec-model-number');
+        if (specModel) specModel.textContent = item.modelSpec;
+
+        // 6. Update Size Label
+        const sizeLabel = document.getElementById('selected-size-label');
+        if (sizeLabel) sizeLabel.textContent = item.size;
+
+        // 7. Update Active Pill
+        document.querySelectorAll('.var-pill').forEach(pill => {
+            pill.classList.toggle('active', pill.dataset.varKey === varKey);
+        });
+
+        // 8. Update Active Hot Card
+        document.querySelectorAll('.hot-card').forEach(card => {
+            card.classList.toggle('active-selection', card.dataset.varKey === varKey);
+        });
+
+        // 9. Update all carousel slides to match selected size
+        if (item.images && item.images.length) {
+            const slideImgs = document.querySelectorAll('#carousel .carousel-slide img');
+            slideImgs.forEach((img, idx) => {
+                if (item.images[idx]) {
+                    img.src = item.images[idx];
+                    img.alt = `${item.title} - Image ${idx + 1}`;
+                }
+            });
+        }
+
+        // 10. Persist in localStorage for Checkout & Order pages
+        try {
+            localStorage.setItem('takealot_selected_product', JSON.stringify({
+                key: varKey,
+                title: item.title,
+                price: item.price,
+                image: item.image,
+                size: item.size
+            }));
+        } catch(e) {}
+
+        // Feedback toast
+        showLocationToast(`Selected: ${item.size} · R ${item.price}`);
+
+        if (shouldScroll) {
+            const metaSec = document.querySelector('.product-meta') || document.querySelector('.price-section');
+            if (metaSec) {
+                metaSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
+    function pickOffer(cardEl, price) {
+        document.querySelectorAll('.offer-card').forEach(c => c.classList.remove('active'));
+        cardEl.classList.add('active');
+        selectedPrice = price;
+        document.getElementById('main-price-display').textContent = `R ${price}`;
+        document.getElementById('footer-price-display').textContent = `R ${price}`;
+    }
+
+    function goToCart() {
+        const item = {
+            id: selectedVariationKey,
+            title: selectedTitle,
+            price: selectedPrice,
+            image: selectedImage,
+            qty: 1
+        };
+        try {
+            localStorage.setItem('takealot_selected_product', JSON.stringify(item));
+        } catch(e) {}
+        const url = `checkout.html?price=${selectedPrice}&qty=1&title=${encodeURIComponent(selectedTitle)}&img=${encodeURIComponent(selectedImage)}`;
+        window.location.href = (window.appendUtms ? window.appendUtms(url) : url);
+    }
+
+    function toggleWishlist() {
+        const heart = document.getElementById('heart-icon');
+        if (heart.textContent === '♡') {
+            heart.textContent = '♥';
+            heart.style.color = '#e91e63';
+        } else {
+            heart.textContent = '♡';
+        }
+    }
+
+    // Description Show More/Less
+    const descBtn = document.getElementById('desc-toggle-btn');
+    const descBody = document.getElementById('desc-body');
+    const descFade = document.getElementById('desc-fade');
+
+    descBtn.addEventListener('click', () => {
+        if (descBody.style.maxHeight !== 'none') {
+            descBody.style.maxHeight = 'none';
+            descFade.style.display = 'none';
+            descBtn.textContent = 'Show Less';
+        } else {
+            descBody.style.maxHeight = '120px';
+            descFade.style.display = 'block';
+            descBtn.textContent = 'Show More';
+        }
+    });
+
+    // Review Comment Expand/Collapse (Read More / Read Less)
+    function toggleReviewText(linkEl) {
+        const parent = linkEl.closest('.review-card-text');
+        const shortText = parent.querySelector('.review-short');
+        const fullText = parent.querySelector('.review-full');
+        
+        if (fullText.style.display === 'none') {
+            shortText.style.display = 'none';
+            fullText.style.display = 'inline';
+            linkEl.textContent = 'Read Less';
+        } else {
+            shortText.style.display = 'inline';
+            fullText.style.display = 'none';
+            linkEl.textContent = 'Read More';
+        }
+    }
+
+    // View All Reviews Toggle
+    function toggleAllReviews() {
+        const extraReviews = document.querySelectorAll('.extra-review');
+        const btn = document.getElementById('view-all-reviews-btn');
+        const loadBtn = document.getElementById('load-more-reviews-btn');
+        if (!extraReviews || !extraReviews.length) return;
+
+        const isHidden = extraReviews[0].style.display === 'none';
+        extraReviews.forEach(r => {
+            r.style.display = isHidden ? 'block' : 'none';
+        });
+        btn.textContent = isHidden ? 'View Less' : 'View All (3,918)';
+        if (loadBtn) {
+            loadBtn.innerHTML = isHidden ? 
+                '<i class="fas fa-chevron-up" style="margin-right: 6px;"></i> Show Less Reviews' : 
+                '<i class="fas fa-chevron-down" style="margin-right: 6px;"></i> Load More Reviews (3,918 Total)';
+        }
+    }
+
+    // Load More Reviews (Batch revealing)
+    function loadMoreReviews() {
+        const extraReviews = Array.from(document.querySelectorAll('.extra-review'));
+        const hiddenReviews = extraReviews.filter(r => r.style.display === 'none');
+        const loadBtn = document.getElementById('load-more-reviews-btn');
+        
+        if (hiddenReviews.length === 0) {
+            // All reviews already expanded, so collapse back
+            extraReviews.forEach(r => r.style.display = 'none');
+            if (loadBtn) loadBtn.innerHTML = '<i class="fas fa-chevron-down" style="margin-right: 6px;"></i> Load More Reviews (3,918 Total)';
+            const viewAllBtn = document.getElementById('view-all-reviews-btn');
+            if (viewAllBtn) viewAllBtn.textContent = 'View All (3,918)';
+            const container = document.getElementById('reviews-list-container');
+            if (container) container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return;
+        }
+
+        // Reveal next batch (4 reviews at a time)
+        const batch = hiddenReviews.slice(0, 4);
+        batch.forEach(r => {
+            r.style.display = 'block';
+        });
+
+        const remaining = hiddenReviews.length - batch.length;
+        if (remaining > 0) {
+            if (loadBtn) loadBtn.innerHTML = `<i class="fas fa-chevron-down" style="margin-right: 6px;"></i> Load More Reviews (${remaining} more reviews)`;
+        } else {
+            if (loadBtn) loadBtn.innerHTML = `<i class="fas fa-chevron-up" style="margin-right: 6px;"></i> Show Less Reviews`;
+            const viewAllBtn = document.getElementById('view-all-reviews-btn');
+            if (viewAllBtn) viewAllBtn.textContent = 'View Less';
+        }
+    }
+
+    // Filter Reviews Category
+    function filterReviewsCategory(btnEl, category) {
+        document.querySelectorAll('.review-chip').forEach(c => c.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+
+        const allCards = document.querySelectorAll('.review-single-card');
+        const loadBtn = document.getElementById('load-more-reviews-btn');
+        const viewAllRow = document.querySelector('.view-all-reviews');
+
+        allCards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            let matches = true;
+
+            if (category === 'sound') {
+                matches = text.includes('sound') || text.includes('audio') || text.includes('onkyo') || text.includes('bass') || text.includes('speakers') || text.includes('soundbar');
+            } else if (category === 'gaming') {
+                matches = text.includes('game') || text.includes('gaming') || text.includes('120hz') || text.includes('ps5') || text.includes('console') || text.includes('xbox') || text.includes('input lag');
+            } else if (category === '5star') {
+                matches = text.includes('5');
+            } else if (category === 'verified') {
+                matches = card.querySelector('.verified-buyer-pill') !== null;
+            } else {
+                matches = true;
+            }
+
+            if (category === 'all') {
+                // Restore default view (first 3 visible, extra reviews hidden)
+                if (card.classList.contains('extra-review')) {
+                    card.style.display = 'none';
+                } else {
+                    card.style.display = 'block';
+                }
+            } else {
+                card.style.display = matches ? 'block' : 'none';
+            }
+        });
+
+        if (loadBtn) {
+            if (category === 'all') {
+                loadBtn.style.display = 'block';
+                loadBtn.innerHTML = '<i class="fas fa-chevron-down" style="margin-right: 6px;"></i> Load More Reviews (3,918 Total)';
+            } else {
+                loadBtn.style.display = 'none';
+            }
+        }
+        if (viewAllRow) {
+            viewAllRow.style.display = (category === 'all') ? 'block' : 'none';
+        }
+    }
+
+    // Helpful Thumbs Up Toggle
+    function toggleHelpful(el) {
+        const countEl = el.querySelector('.like-count');
+        const icon = el.querySelector('.fa-thumbs-up');
+        let count = parseInt(countEl.textContent, 10);
+        if (el.dataset.liked === 'true') {
+            el.dataset.liked = 'false';
+            countEl.textContent = count - 1;
+            icon.style.color = '';
+        } else {
+            el.dataset.liked = 'true';
+            countEl.textContent = count + 1;
+            icon.style.color = '#0b79bf';
+            showLocationToast("Thank you for your feedback!");
+        }
+    }
+
+    // Product Specifications Table Toggle (Show More / Show Less)
+    function toggleSpecs() {
+        const extraRows = document.querySelectorAll('.extra-spec-row');
+        const btn = document.getElementById('spec-toggle-btn');
+        if (!extraRows || !extraRows.length) return;
+
+        const isHidden = extraRows[0].style.display === 'none';
+        extraRows.forEach(row => {
+            row.style.display = isHidden ? 'table-row' : 'none';
+        });
+        btn.textContent = isHidden ? 'Show Less' : 'Show More';
+    }
+
+    // Carousel dots
+    const carousel = document.getElementById('carousel');
+    const dots = document.querySelectorAll('.dot');
+    carousel.addEventListener('scroll', () => {
+        const index = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+        dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    });
+
+    // Location Selection & Modal Logic (Takealot Mobile)
+    const saLocations = [
+        // Gauteng
+        { city: "Johannesburg", province: "Gauteng", code: "2001" },
+        { city: "Sandton", province: "Gauteng", code: "2196" },
+        { city: "Pretoria", province: "Gauteng", code: "0002" },
+        { city: "Centurion", province: "Gauteng", code: "0157" },
+        { city: "Midrand", province: "Gauteng", code: "1685" },
+        { city: "Randburg", province: "Gauteng", code: "2194" },
+        { city: "Roodepoort", province: "Gauteng", code: "1724" },
+        { city: "Soweto", province: "Gauteng", code: "1804" },
+        { city: "Kempton Park", province: "Gauteng", code: "1619" },
+        { city: "Benoni", province: "Gauteng", code: "1501" },
+        { city: "Boksburg", province: "Gauteng", code: "1459" },
+        { city: "Germiston", province: "Gauteng", code: "1401" },
+        { city: "Krugersdorp", province: "Gauteng", code: "1739" },
+        { city: "Alberton", province: "Gauteng", code: "1449" },
+        { city: "Bedfordview", province: "Gauteng", code: "2007" },
+        { city: "Fourways", province: "Gauteng", code: "2055" },
+        { city: "Rosebank", province: "Gauteng", code: "2196" },
+        { city: "Bryanston", province: "Gauteng", code: "2191" },
+        // Western Cape
+        { city: "Cape Town", province: "Western Cape", code: "8001" },
+        { city: "Stellenbosch", province: "Western Cape", code: "7600" },
+        { city: "Bellville", province: "Western Cape", code: "7530" },
+        { city: "Somerset West", province: "Western Cape", code: "7130" },
+        { city: "Paarl", province: "Western Cape", code: "7646" },
+        { city: "George", province: "Western Cape", code: "6529" },
+        { city: "Hermanus", province: "Western Cape", code: "7200" },
+        { city: "Mossel Bay", province: "Western Cape", code: "6500" },
+        { city: "Knysna", province: "Western Cape", code: "6571" },
+        { city: "Bloubergstrand", province: "Western Cape", code: "7441" },
+        { city: "Camps Bay", province: "Western Cape", code: "8005" },
+        { city: "Sea Point", province: "Western Cape", code: "8005" },
+        { city: "Rondebosch", province: "Western Cape", code: "7700" },
+        { city: "Claremont", province: "Western Cape", code: "7708" },
+        { city: "Constantia", province: "Western Cape", code: "7806" },
+        { city: "Durbanville", province: "Western Cape", code: "7550" },
+        { city: "Milnerton", province: "Western Cape", code: "7441" },
+        { city: "Brackenfell", province: "Western Cape", code: "7560" },
+        // KwaZulu-Natal
+        { city: "Durban", province: "KwaZulu-Natal", code: "4001" },
+        { city: "Umhlanga", province: "KwaZulu-Natal", code: "4319" },
+        { city: "Ballito", province: "KwaZulu-Natal", code: "4420" },
+        { city: "Pietermaritzburg", province: "KwaZulu-Natal", code: "3201" },
+        { city: "Pinetown", province: "KwaZulu-Natal", code: "3610" },
+        { city: "Richards Bay", province: "KwaZulu-Natal", code: "3900" },
+        { city: "Newcastle", province: "KwaZulu-Natal", code: "2940" },
+        { city: "Hillcrest", province: "KwaZulu-Natal", code: "3610" },
+        { city: "Amanzimtoti", province: "KwaZulu-Natal", code: "4126" },
+        { city: "Westville", province: "KwaZulu-Natal", code: "3629" },
+        { city: "Margate", province: "KwaZulu-Natal", code: "4275" },
+        // Eastern Cape
+        { city: "Gqeberha (Port Elizabeth)", province: "Eastern Cape", code: "6001" },
+        { city: "East London", province: "Eastern Cape", code: "5201" },
+        { city: "Mthatha", province: "Eastern Cape", code: "5099" },
+        { city: "Makhanda (Grahamstown)", province: "Eastern Cape", code: "6139" },
+        { city: "Jeffreys Bay", province: "Eastern Cape", code: "6330" },
+        { city: "Uitenhage (Kariega)", province: "Eastern Cape", code: "6229" },
+        // Free State
+        { city: "Bloemfontein", province: "Free State", code: "9301" },
+        { city: "Welkom", province: "Free State", code: "9459" },
+        { city: "Sasolburg", province: "Free State", code: "1947" },
+        { city: "Bethlehem", province: "Free State", code: "9700" },
+        // Mpumalanga
+        { city: "Mbombela (Nelspruit)", province: "Mpumalanga", code: "1200" },
+        { city: "eMalahleni (Witbank)", province: "Mpumalanga", code: "1034" },
+        { city: "Middelburg", province: "Mpumalanga", code: "1050" },
+        { city: "Secunda", province: "Mpumalanga", code: "2302" },
+        // Limpopo
+        { city: "Polokwane", province: "Limpopo", code: "0700" },
+        { city: "Tzaneen", province: "Limpopo", code: "0850" },
+        { city: "Thohoyandou", province: "Limpopo", code: "0950" },
+        { city: "Mokopane", province: "Limpopo", code: "0600" },
+        // North West
+        { city: "Rustenburg", province: "North West", code: "0299" },
+        { city: "Potchefstroom", province: "North West", code: "2531" },
+        { city: "Klerksdorp", province: "North West", code: "2571" },
+        { city: "Mahikeng", province: "North West", code: "2745" },
+        // Northern Cape
+        { city: "Kimberley", province: "Northern Cape", code: "8301" },
+        { city: "Upington", province: "Northern Cape", code: "8801" },
+        { city: "Springbok", province: "Northern Cape", code: "8240" }
+    ];
+
+    let currentFilteredLocations = saLocations;
+
+    function openLocationModal() {
+        const modal = document.getElementById('location-modal-backdrop');
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        const searchInput = document.getElementById('location-search-input');
+        if (searchInput) searchInput.value = '';
+        renderLocations(saLocations);
+        setTimeout(() => {
+            if (searchInput) searchInput.focus();
+        }, 150);
+    }
+
+    function closeLocationModal(e) {
+        if (e && e.target !== e.currentTarget && !e.target.closest('.modal-close-btn')) return;
+        const modal = document.getElementById('location-modal-backdrop');
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function renderLocations(list, query = "") {
+        const container = document.getElementById('locations-list-container');
+        if (!container) return;
+        currentFilteredLocations = list;
+
+        if (!list || list.length === 0) {
+            container.innerHTML = `
+                <div style="padding: 20px 0; text-align: center; color: #777; font-size: 13px;">
+                    No preset city found for "<strong>${escapeHtml(query)}</strong>"<br>
+                    <button type="button" onclick="setCustomLocation('${escapeHtml(query)}')" style="margin-top: 12px; background: #0b79bf; color: #fff; border: none; padding: 10px 18px; border-radius: 20px; font-weight: 600; cursor: pointer;">
+                        Deliver to "${escapeHtml(query)}"
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = list.map(item => `
+            <div class="location-item" onclick="selectLocation('${item.city}', '${item.code}')">
+                <div class="location-item-left">
+                    <i class="fas fa-location-dot"></i>
+                    <div>
+                        <div class="location-item-city">${item.city}</div>
+                        <div class="location-item-province">${item.province}, ${item.code}</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right location-item-arrow"></i>
+            </div>
+        `).join('');
+    }
+
+    function filterLocations(query) {
+        const q = (query || '').trim().toLowerCase();
+        if (!q) {
+            renderLocations(saLocations);
+            return;
+        }
+        const filtered = saLocations.filter(loc => 
+            loc.city.toLowerCase().includes(q) || 
+            loc.province.toLowerCase().includes(q) || 
+            loc.code.includes(q)
+        );
+        renderLocations(filtered, query.trim());
+    }
+
+    // Handles browser autofill triggers (change/autofill event)
+    function handleAddressChange(inputEl) {
+        const val = (inputEl.value || '').trim();
+        if (!val) return;
+
+        // Check if browser autofill populated hidden city/postal fields
+        const hiddenCity = document.getElementById('autofill-city')?.value.trim();
+        const hiddenPostal = document.getElementById('autofill-postal')?.value.trim();
+        if (hiddenCity) {
+            selectLocation(hiddenCity, hiddenPostal || "");
+            return;
+        }
+
+        parseAndApplyAddress(val);
+    }
+
+    // Handles Enter or Form Submit on autofill
+    function handleAddressAutofillSubmit() {
+        const input = document.getElementById('location-search-input');
+        const val = (input ? input.value : '').trim();
+        if (!val) return;
+
+        // Check hidden fields
+        const hiddenCity = document.getElementById('autofill-city')?.value.trim();
+        const hiddenPostal = document.getElementById('autofill-postal')?.value.trim();
+        if (hiddenCity) {
+            selectLocation(hiddenCity, hiddenPostal || "");
+            return;
+        }
+
+        // If filtered list has matches and top match matches prefix
+        if (currentFilteredLocations && currentFilteredLocations.length > 0) {
+            selectLocation(currentFilteredLocations[0].city, currentFilteredLocations[0].code);
+            return;
+        }
+
+        parseAndApplyAddress(val);
+    }
+
+    function parseAndApplyAddress(val) {
+        if (!val) return;
+        const lower = val.toLowerCase();
+        
+        // Match against known SA locations
+        for (const loc of saLocations) {
+            if (lower.includes(loc.city.toLowerCase()) || (loc.code && lower.includes(loc.code))) {
+                selectLocation(loc.city, loc.code);
+                return;
+            }
+        }
+
+        // If it's a full address e.g. "15 Bree St, Cape Town, 8001"
+        const parts = val.split(',').map(p => p.trim()).filter(Boolean);
+        if (parts.length >= 2) {
+            const cleanSub = parts.slice(-2).join(', ');
+            setCustomLocation(cleanSub);
+        } else {
+            setCustomLocation(val);
+        }
+    }
+
+    function selectLocation(city, code) {
+        const full = code ? `${city}, ${code}` : city;
+        applyLocation(full, city);
+        closeLocationModal();
+        showLocationToast(`Delivery location set to ${full}`);
+    }
+
+    function setCustomLocation(name) {
+        const cleaned = (name || '').trim();
+        if (!cleaned) return;
+        applyLocation(cleaned, cleaned);
+        closeLocationModal();
+        showLocationToast(`Delivery location set to ${cleaned}`);
+    }
+
+    function useCurrentLocation() {
+        showLocationToast("Detecting your location...");
+        setTimeout(() => {
+            selectLocation("Cape Town", "8001");
+        }, 500);
+    }
+
+    function applyLocation(fullLoc, city) {
+        try {
+            localStorage.setItem('takealot_delivery_location', fullLoc);
+            localStorage.setItem('takealot_delivery_city', city);
+        } catch(e) {}
+
+        const topText = document.getElementById('top-location-text');
+        const topAction = document.getElementById('top-location-action');
+        const topIcon = document.getElementById('top-location-icon');
+        const cardText = document.getElementById('card-location-text');
+        const cardAction = document.getElementById('card-location-action');
+        const cardIcon = document.getElementById('card-location-icon');
+
+        if (topText) {
+            topText.innerHTML = `Deliver to <strong>${fullLoc}</strong>`;
+        }
+        if (topIcon) topIcon.style.color = '#0b79bf';
+        if (topAction) topAction.textContent = 'Change';
+
+        if (cardText) {
+            cardText.innerHTML = `<strong>${fullLoc}</strong>`;
+        }
+        if (cardIcon) cardIcon.style.color = '#0b79bf';
+        if (cardAction) cardAction.textContent = 'Change';
+    }
+
+    function showLocationToast(msg) {
+        const toast = document.getElementById('location-toast');
+        if (!toast) return;
+        toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>${msg}</span>`;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2800);
+    }
+
+    function escapeHtml(str) {
+        return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Auto-load saved location if previously set
+    window.addEventListener('load', () => {
+        try {
+            const saved = localStorage.getItem('takealot_delivery_location');
+            const savedCity = localStorage.getItem('takealot_delivery_city');
+            if (saved) {
+                applyLocation(saved, savedCity || saved);
+            }
+        } catch(e) {}
+    });
+</script>
+</body>
+</html>

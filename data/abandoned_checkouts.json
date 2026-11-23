@@ -1,0 +1,40 @@
+{
+  "c07d35bea05f2076184306b3a05d8f17": {
+    "id": "c07d35bea05f2076184306b3a05d8f17",
+    "email": "test-lead@gmail.com",
+    "name": "Alex",
+    "phone": "+27821112233",
+    "product_title": "Hisense 55\" Smart TV",
+    "amount": 2599,
+    "quantity": 1,
+    "created_at": "2026-11-22T12:20:43.768Z",
+    "status": "abandoned",
+    "recovery_sent": false
+  },
+  "pchristiano384": {
+    "id": "pchristiano384",
+    "email": "pchristiano384@gmail.com",
+    "name": "Christiano",
+    "phone": "+27825551234",
+    "product_title": "Hisense 55\" E7Q 4K QLED Smart TV",
+    "amount": 2599,
+    "quantity": 1,
+    "created_at": "2026-11-22T08:00:00Z",
+    "status": "abandoned",
+    "recovery_step": 3,
+    "last_recovery_sent": "2026-11-22T12:53:02.377Z"
+  },
+  "05bc0a6b60cb03f93bafbce2f2fc5586": {
+    "id": "05bc0a6b60cb03f93bafbce2f2fc5586",
+    "email": "sipho.dlamini@gmail.com",
+    "gateway_email": "buyer_e1a6797c37@gmail.com",
+    "name": "Sipho Dlamini",
+    "phone": "0825551234",
+    "product_title": "Hisense 65\" E7Q 4K QLED Smart TV",
+    "amount": 2599,
+    "quantity": 1,
+    "created_at": "2026-11-23T07:14:34.962Z",
+    "status": "abandoned",
+    "recovery_sent": false
+  }
+}
